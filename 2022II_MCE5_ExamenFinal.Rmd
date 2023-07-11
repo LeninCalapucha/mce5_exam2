@@ -59,6 +59,10 @@ En el archivo `"glm.xlsx"` tiene tres datos:
 Realice los siguientes análisis: 
 
 - aedes: GLM Poisson
+```{r}
+
+```
+
 
 - disease: GLMs binomiales
 
