@@ -60,7 +60,22 @@ Realice los siguientes análisis:
 
 - aedes: GLM Poisson
 ```{r}
-
+library(graphics)
+library(MASS)
+library(readxl)
+library(MASS)
+datos <- data.frame(agrochem = c("A", "B", "C", "D", "E", "A", "B", "C", "D", "E", "A", "B", "C", "D", "E", "A", "B", "C", "D", "E", "A", "B", "C", "D", "E"),
+                    repetition = c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5),
+                    aedes = c(2370, 1282, 562, 173, 193,
+                              1687, 1527, 321, 127, 71,
+                              2592, 871 ,636 ,132 ,82,
+                              2283 ,1025 ,317 ,150 ,62,
+                              2910 ,825 ,485 ,129 ,96),
+                    stringsAsFactors = FALSE)
+modelo <- glm(aedes ~ agrochem + repetition + agrochem:repetition,
+              data = datos,
+              family = poisson)
+summary(modelo)
 ```
 
 

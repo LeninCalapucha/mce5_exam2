@@ -1313,6 +1313,106 @@ ul.task-list{list-style: none;}
 
 
 
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+background-color: #2a211c;
+color: #bdae9d;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #bdae9d; padding-left: 4px; }
+div.sourceCode
+{ color: #bdae9d; background-color: #2a211c; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ffff00; } 
+code span.an { color: #0066ff; font-weight: bold; font-style: italic; } 
+code span.at { } 
+code span.bn { color: #44aa43; } 
+code span.bu { } 
+code span.cf { color: #43a8ed; font-weight: bold; } 
+code span.ch { color: #049b0a; } 
+code span.cn { } 
+code span.co { color: #0066ff; font-weight: bold; font-style: italic; } 
+code span.do { color: #0066ff; font-style: italic; } 
+code span.dt { text-decoration: underline; } 
+code span.dv { color: #44aa43; } 
+code span.er { color: #ffff00; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #44aa43; } 
+code span.fu { color: #ff9358; font-weight: bold; } 
+code span.im { } 
+code span.in { color: #0066ff; font-weight: bold; font-style: italic; } 
+code span.kw { color: #43a8ed; font-weight: bold; } 
+code span.op { } 
+code span.pp { font-weight: bold; } 
+code span.sc { color: #049b0a; } 
+code span.ss { color: #049b0a; } 
+code span.st { color: #049b0a; } 
+code span.va { } 
+code span.vs { color: #049b0a; } 
+code span.wa { color: #ffff00; font-weight: bold; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -1535,7 +1635,52 @@ dicotómicas.</p></li>
 </ul>
 <p>Realice los siguientes análisis:</p>
 <ul>
-<li><p>aedes: GLM Poisson</p></li>
+<li>aedes: GLM Poisson</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(graphics)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">agrochem =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;E&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;E&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;E&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;E&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;E&quot;</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">repetition =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">aedes =</span> <span class="fu">c</span>(<span class="dv">2370</span>, <span class="dv">1282</span>, <span class="dv">562</span>, <span class="dv">173</span>, <span class="dv">193</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                              <span class="dv">1687</span>, <span class="dv">1527</span>, <span class="dv">321</span>, <span class="dv">127</span>, <span class="dv">71</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                              <span class="dv">2592</span>, <span class="dv">871</span> ,<span class="dv">636</span> ,<span class="dv">132</span> ,<span class="dv">82</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                              <span class="dv">2283</span> ,<span class="dv">1025</span> ,<span class="dv">317</span> ,<span class="dv">150</span> ,<span class="dv">62</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                              <span class="dv">2910</span> ,<span class="dv">825</span> ,<span class="dv">485</span> ,<span class="dv">129</span> ,<span class="dv">96</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>modelo <span class="ot">&lt;-</span> <span class="fu">glm</span>(aedes <span class="sc">~</span> agrochem <span class="sc">+</span> repetition <span class="sc">+</span> agrochem<span class="sc">:</span>repetition,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> datos,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">family =</span> poisson)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = aedes ~ agrochem + repetition + agrochem:repetition, 
+##     family = poisson, data = datos)
+## 
+## Coefficients:
+##                       Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)           7.552188   0.022447 336.442  &lt; 2e-16 ***
+## agrochemB            -0.173405   0.037152  -4.667 3.05e-06 ***
+## agrochemC            -1.310870   0.052814 -24.820  &lt; 2e-16 ***
+## agrochemD            -2.459791   0.088746 -27.717  &lt; 2e-16 ***
+## agrochemE            -2.365614   0.097726 -24.207  &lt; 2e-16 ***
+## repetition            0.070919   0.006519  10.879  &lt; 2e-16 ***
+## agrochemB:repetition -0.199868   0.011614 -17.210  &lt; 2e-16 ***
+## agrochemC:repetition -0.104973   0.016070  -6.532 6.48e-11 ***
+## agrochemD:repetition -0.116671   0.027343  -4.267 1.98e-05 ***
+## agrochemE:repetition -0.275952   0.033007  -8.360  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 21313  on 24  degrees of freedom
+## Residual deviance:   602  on 15  degrees of freedom
+## AIC: 819.52
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<ul>
 <li><p>disease: GLMs binomiales</p></li>
 <li><p>leishmania: glm bayesiano</p></li>
 </ul>
