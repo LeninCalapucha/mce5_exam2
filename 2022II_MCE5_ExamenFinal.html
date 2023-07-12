@@ -1681,8 +1681,18 @@ dicotómicas.</p></li>
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <ul>
-<li><p>disease: GLMs binomiales</p></li>
-<li><p>leishmania: glm bayesiano</p></li>
+<li>disease: GLMs binomiales</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stats)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(graphics)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>data_aedes <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">&quot;glm.xlsx&quot;</span>, <span class="at">sheet =</span> <span class="st">&quot;aedes&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(data_aedes<span class="sc">$</span>aedes)</span></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    44.0   136.5   523.5   865.4  1217.8  3020.0</code></pre>
+<ul>
+<li>leishmania: glm bayesiano</li>
 </ul>
 <p>Realizar los siguientes análisis y respectivas interpretaciones:</p>
 <ol style="list-style-type: decimal">
