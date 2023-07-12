@@ -162,7 +162,7 @@ library(tidyverse)
 
 
 
-occ = occ_data(scientificName = 'Panthera onca', 
+occ = occ_data(scientificName = 'Ceroxylon quindiuense', 
                 limit = 200000, 
                 hasCoordinate = TRUE, 
                 hasGeospatialIssue = FALSE)
