@@ -156,4 +156,26 @@ Seleccione una especie de planta y una especie de animal; asimismo, dos tipos de
 - Chirimoya: *Anona cherimola*
 
 Luego realice un análisis espacial de distribución de la especie en Ecuador continental en base a los datos de presencia del GBIF (use rgbif para descargar la data). Explique el resultado y compare la diferencia entre la salida de los dos modelos. En qué regiones los modelos difieren más en la predicción?   
+```{r}
+library(rgbif)
+library(tidyverse)
+
+
+
+occ = occ_data(scientificName = 'Panthera onca', 
+                limit = 200000, 
+                hasCoordinate = TRUE, 
+                hasGeospatialIssue = FALSE)
+
+Datos_oso_anteojos= filter(occ$data, country == 'Ecuador')
+
+
+shp = raster::getData('GADM', country = 'ECU', level = 1)
+
+ ggplot() +
+  geom_point(data = Datos_oso_anteojos, aes(x = decimalLongitude, y = decimalLatitude), color = 'black') +
+  geom_polygon(data = shp, aes(x = long, y = lat, group = group), color = 'grey', fill = NA) +
+  coord_fixed(ylim = c(-5, 2.5), xlim = c(-92.5, -30))+  xlab('Longitud') +
+ ylab('Latitud')
+```
 
