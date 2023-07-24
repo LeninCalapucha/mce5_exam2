@@ -1,7 +1,7 @@
 ---
 title: "Métodos Cuantitativos en Ecología - MCE5"
 subtitle: "EXAMEN FINAL - 2022II"
-author: 'Calapucha Lenin J.'
+author: 'Calapucha Lenin'
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -59,36 +59,8 @@ En el archivo `"glm.xlsx"` tiene tres datos:
 Realice los siguientes análisis: 
 
 - aedes: GLM Poisson
-```{r}
-library(graphics)
-library(MASS)
-library(readxl)
-library(MASS)
-datos <- data.frame(agrochem = c("A", "B", "C", "D", "E", "A", "B", "C", "D", "E", "A", "B", "C", "D", "E", "A", "B", "C", "D", "E", "A", "B", "C", "D", "E"),
-                    repetition = c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5),
-                    aedes = c(2370, 1282, 562, 173, 193,
-                              1687, 1527, 321, 127, 71,
-                              2592, 871 ,636 ,132 ,82,
-                              2283 ,1025 ,317 ,150 ,62,
-                              2910 ,825 ,485 ,129 ,96),
-                    stringsAsFactors = FALSE)
-modelo <- glm(aedes ~ agrochem + repetition + agrochem:repetition,
-              data = datos,
-              family = poisson)
-summary(modelo)
-```
-
 
 - disease: GLMs binomiales
-```{r}
-library(stats)
-library(graphics)
-library(MASS)
-library(readxl)
-data_aedes <- read_excel("glm.xlsx", sheet = "aedes")
-summary(data_aedes$aedes)
-```
-
 
 - leishmania: glm bayesiano
 
@@ -96,15 +68,173 @@ Realizar los siguientes análisis y respectivas interpretaciones:
 
 1. Análisis exploratorio.
 
+```{r}
+#carga de datos
+library(readxl)
+datos<- read_excel("C:/Users/HP/Downloads/mce5_exam2-main/mce5_exam2-main/glm.xlsx")
+datos$agrochem=as.factor(datos$agrochem)
+datos$repetition=as.factor(datos$repetition)
+
+
+#Resumen de los datos
+summary(datos)
+
+```
+Los datos poseen diferentes variables a las establecidas en el examen por lo cual se considero aedes como variable continua, repeticion como factor y agrochem como factor. En este caso ninguna variable es dicotomica, por lo tanto se ralizara el analisis exploratorio.
+```{r}
+library(ggplot2)
+# Gráfico de densidad y histograma para la variable eaes
+ggplot(datos, aes(x = aedes))  +
+  geom_histogram( fill = "lightblue", color = "black") +
+  labs(title = "Distribución de eaes",
+       x = "eaes") +
+  theme_minimal()
+
+# Gráfico de barras para la variable agrochem
+ggplot(datos, aes(x = agrochem)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Distribución de agrochem",
+       x = "agrochem") +
+  theme_minimal()
+
+# Gráfico de barras para la variable repetition
+ggplot(datos, aes(x = repetition)) +
+  geom_bar(fill = "orange") +
+  labs(title = "Distribución de repetition",
+       x = "repetition") +
+  theme_minimal()
+
+# Gráfico de dispersión para ver la relación entre eaes y agrochem
+ggplot(datos, aes(x = agrochem, y = aedes, color = agrochem)) +
+  geom_point() +
+  labs(title = "Relación entre eaes y agrochem",
+       x = "agrochem",
+       y = "eaes") +
+  theme_minimal()
+
+# Gráfico de dispersión para ver la relación entre eaes y repetition
+ggplot(datos, aes(x = repetition, y =aedes, color = repetition)) +
+  geom_point() +
+  labs(title = "Relación entre eaes y repetition",
+       x = "repetition",
+       y = "eaes") +
+  theme_minimal()
+
+
+
+```
+
+
+
 2. Planteamiento de hipótesis.
-Cuando los datos son de importancia 
+
+AEDES:La variable de respuesta sigue una distribución de Poisson en función de los predictores agrochem y repetition.
+
+Agrochem:El tipo de agroquímico utilizado (agrochem) está relacionado con la efectividad del tratamiento agrícola (aedes) y la repetición del experimento (repetition).(Regresion logistica ordinal)
+
+Repetition: La variable ordinal repetition (con 6 niveles) está relacionada con los cambios en los niveles ordenados en función de los predictores agrochem y eaes. Ambas variables explican las diferencias en las probabilidades de pasar de un nivel a otro en repetition.(Regresion logistica ordinal)
+
 
 3. Análisis de regresión 
 
+AEDES
+```{r}
+library(MASS)
+# Ajusta el modelo GLM Poisson
+modelo_poisson <- glm(aedes ~ agrochem + repetition, data = datos, family = poisson)
+
+# Muestra un resumen del modelo
+summary(modelo_poisson)
+
+# Muestra los coeficientes estimados y las pruebas de significancia
+coef(modelo_poisson)
+```
+AGROCHEMMm
+```{r}
+#install.packages("ordinal")
+library(ordinal)
+
+
+# Convierte 'agrochem' y 'repetition' en factores ordenados si no lo están
+datos$agrochem <- ordered(datos$agrochem)
+datos$repetition <- ordered(datos$repetition)
+
+# Ajusta el modelo de regresión logística ordinal utilizando la familia 'ordinal'
+modelo_ordinal <- clm(agrochem ~ aedes + repetition, data = datos)
+
+# Muestra un resumen del modelo
+summary(modelo_ordinal)
+
+# Muestra los coeficientes estimados y las pruebas de significancia
+coef(modelo_ordinal)
+
+```
+
+REPETITION
+```{r}
+# Ajusta el modelo de regresión logística ordinal utilizando la función 'clm'
+modelo_ordinal_repetition <- clm(repetition ~ agrochem + aedes, data = datos)
+
+# Muestra un resumen del modelo
+summary(modelo_ordinal_repetition)
+
+# Muestra los coeficientes estimados y las pruebas de significancia
+coef(modelo_ordinal_repetition)
+```
+
 4. Planteamiento del modelo. 
 
-5. Validez del modelo.
 
+5. Validez del modelo.
+AEDES
+```{r}
+# Obtener valores observados
+valores_observed <- datos$aedes
+
+# Obtener los valores ajustados del modelo Poisson
+valores_ajustados <- fitted(modelo_poisson)
+
+# Gráfico de dispersión de valores observados vs valores ajustados
+plot(datos$aedes, valores_ajustados, xlab = "Valores Observados", ylab = "Valores Ajustados", main = "Gráfico Observados vs Ajustados")
+
+# Gráfico de residuos estandarizados
+residuos_estandarizados <- residuals(modelo_poisson, type = "pearson")
+plot(valores_ajustados, residuos_estandarizados, xlab = "Valores Ajustados", ylab = "Residuos Estandarizados", main = "Gráfico Residuos Estandarizados vs Ajustados")
+
+# Gráfico Q-Q
+qqnorm(residuos_estandarizados)
+
+```
+REPETITION
+
+```{r}
+#install.packages("caret")
+library(caret)
+# Realizar validación cruzada con 5 repeticiones
+
+cv_results <- train(repetition ~ agrochem + aedes,
+  data = datos,
+  method = "polr",
+  trControl = trainControl(method = "cv", number = 5)
+)
+
+# Mostrar los resultados de la validación cruzada
+cv_results
+```
+la tabla muestra los resultados de la validación cruzada para un modelo de regresión logística ordinal con 30 muestras, 2 variables predictoras y 6 clases en la variable de respuesta. Se evaluaron diferentes métodos de ajuste, como 'cauchit', 'cloglog', 'logistic', 'loglog' y 'probit'.
+
+Los valores de precisión (Accuracy) y el coeficiente de Kappa (Kappa) son bajos para todos los métodos evaluados, lo que indica que las predicciones del modelo no tienen un buen ajuste a las clases reales.
+
+El método 'probit' fue seleccionado como el óptimo según la métrica de precisión, pero los valores de precisión son generalmente bajos, lo que sugiere que el modelo puede no estar ajustándose bien a los datos.
+
+Dado el tamaño pequeño de la muestra y la cantidad de clases en la variable de respuesta, es posible que el modelo enfrente desafíos para encontrar patrones significativos.
+
+
+
+AGROCHEM
+
+
+Se evaluaron dos métodos de regresión, el "Ordered Logistic" y el "Probit Regression", utilizando 30 muestras, 2 variables predictoras y 6 clases en la variable de respuesta. Los resultados de la validación cruzada mostraron que ambos métodos tuvieron un desempeño deficiente en la clasificación, con valores bajos de precisión y coeficiente Kappa. El método "Probit Regression" tuvo la precisión más alta entre los métodos evaluados, aunque sigue siendo baja. Debido al tamaño de la muestra y la complejidad del problema, el modelo puede tener dificultades para encontrar patrones significativos en los datos. Se sugiere realizar un análisis más detallado y considerar técnicas adicionales para mejorar el rendimiento del modelo.
 
 
 
@@ -125,12 +255,159 @@ Realizar los siguientes análisis y respectivas interpretaciones:
 
 1. Análisis exploratorio: autocorrelación y descomposición, análisis estacional.
 
+```{r message=TRUE}
+library(readxl)
+library(ggplot2)
+library(forecast)
+ts <- read_excel("C:/Users/HP/Downloads/mce5_exam2-main/mce5_exam2-main/ts.xlsx")
+
+# Gráfico de la serie de tiempo
+ggplot(ts, aes(x = year, y = quakes)) +
+  geom_line() +
+  labs(title = "Serie de tiempo de terremotos por año",
+       x = "Año",
+       y = "Número de terremotos")
+# Análisis de autocorrelación
+autocorr <- acf(ts$quakes, lag.max = 10)
+plot(autocorr, main = "Función de autocorrelación")
+
+
+# Descomposición de la serie de tiempo
+
+# Convertir la variable "year" en una serie de tiempo
+ts1 <- ts(ts$quakes, start = ts$year[1], frequency = 1)
+
+
+####Falta de periodos
+
+
+####Periodos insuficientes
+
+
+```
+
+
 2. ARIMA, SARIMA, ETS, NNAR
 
+ETS
+```{r}
+# Convertir las variables "year" y "quakes" en una serie de tiempo
+ts <- ts(ts$quakes, start = ts$year[1], frequency = 1)
+
+# Ajustar el modelo ETS
+ets_model <- ets(ts)
+
+# Obtener pronósticos
+forecast_ets <- forecast(ets_model, h = 10) # n es el número de períodos a pronosticar
+
+# Graficar los pronósticos
+plot(forecast_ets)
+```
+
+NNAR
+
+```{r}
+# Calcular la función de autocorrelación parcial (PACF)
+pacf_values <- pacf(ts)
+
+# Graficar la función de autocorrelación parcial
+plot(pacf_values, main = "Función de Autocorrelación Parcial (PACF)")
+
+nnar_model <- ar(ts, order.max = 2, method = "ols")
+nnar_model
+```
+Los coeficientes son 0.1868 y 0.1279, lo que significa que los valores en los dos tiempos anteriores (lag 1 y lag 2) tienen un efecto positivo en el valor actual de la serie de tiempo. El valor del intercepto es 0.1854.
+
+El valor estimado de la varianza (sigma^2) del modelo es 15.26. Esta es una estimación de la varianza del término de error, lo que indica la dispersión de los errores del modelo y su capacidad para explicar las variaciones en los datos.
+
+
+
+
 3. Validez de los modelos.
+```{r}
+# Dividir los datos en conjuntos de entrenamiento y prueba
+train_size <- round(0.8 * length(ts))
+train <- ts[1:train_size]
+test <- ts[(train_size + 1):length(ts)]
+
+# Ajustar el modelo NNAR con k = 2 en los datos de entrenamiento
+k <- 2
+nnar_model <- ar(train, order.max = k, method = "ols")
+
+# Obtener pronósticos del modelo NNAR en el conjunto de prueba
+nnar_forecast <- predict(nnar_model, n.ahead = length(test))
+
+# Calcular métricas de rendimiento para el modelo NNAR
+nnar_forecast_ts <- ts(nnar_forecast$pred, start = start(test), frequency = frequency(test))
+
+
+
+mse_nnar <- mean((nnar_forecast_ts - test)^2)
+mae_nnar <- mean(abs(nnar_forecast_ts - test))
+mape_nnar <- mean(abs((nnar_forecast_ts - test) / test)) * 100
+
+# Ajustar el modelo ETS en los datos de entrenamiento
+ets_model <- ets(train)
+
+# Obtener pronósticos del modelo ETS en el conjunto de prueba
+ets_forecast <- forecast(ets_model, h = length(test))
+
+# Calcular métricas de rendimiento para el modelo ETS
+mse_ets <- mean((ets_forecast$mean - test)^2)
+mae_ets <- mean(abs(ets_forecast$mean - test))
+mape_ets <- mean(abs((ets_forecast$mean - test) / test)) * 100
+
+# Imprimir las métricas de rendimiento para ambos modelos
+cat("Métricas de rendimiento para el modelo NNAR:\n")
+cat("MSE:", mse_nnar, "\n")
+cat("MAE:", mae_nnar, "\n")
+cat("MAPE:", mape_nnar, "\n\n")
+
+cat("Métricas de rendimiento para el modelo ETS:\n")
+cat("MSE:", mse_ets, "\n")
+cat("MAE:", mae_ets, "\n")
+cat("MAPE:", mape_ets, "\n")
+```
+Los valores de MSE, MAE y MAPE son métricas comunes para evaluar la precisión de los modelos de pronóstico. En este caso, los valores más bajos indican un mejor rendimiento del modelo.
+
+Podemos observar que el modelo ETS tiene un valor de MSE ligeramente más bajo que el modelo NNAR, lo que sugiere que el modelo ETS puede estar proporcionando pronósticos más precisos en comparación con el modelo NNAR.
+
 
 4. Predicción a 20 años o a 24 meses según corresponda. 
 
+```{r}
+
+
+# Ajustar el modelo NNAR con k = 2 en todos los datos
+k <- 2
+nnar_model <- ar(ts, order.max = k, method = "ols")
+
+# Ajustar el modelo ETS en todos los datos
+ets_model <- ets(ts)
+
+# Obtener pronósticos para los próximos 20 años con el modelo NNAR
+nnar_forecast <- predict(nnar_model, n.ahead = 20)
+
+# Obtener pronósticos para los próximos 20 años con el modelo ETS
+ets_forecast <- forecast(ets_model, h = 20)
+
+forecast_data <- data.frame(
+  year = c(time(ts), time(nnar_forecast$pred), time(ets_forecast$mean)),
+  value = c(ts, nnar_forecast$pred, ets_forecast$mean),
+  model = rep(c("Observado", "NNAR", "ETS"), c(length(ts), length(nnar_forecast$pred), length(ets_forecast$mean)))
+)
+
+
+
+ggplot(data = forecast_data, aes(x = year, y = value)) +
+  geom_line(aes(color = model)) +
+  labs(title = "Pronóstico de terremotos para los próximos 20 años",
+       x = "Año",
+       y = "Terremotos") +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  facet_grid(rows = vars(model))
+```
 
 
 ## **PREGUNTA 3: Análisis espacial de especies [3 PUNTOS]**
@@ -156,26 +433,49 @@ Seleccione una especie de planta y una especie de animal; asimismo, dos tipos de
 - Chirimoya: *Anona cherimola*
 
 Luego realice un análisis espacial de distribución de la especie en Ecuador continental en base a los datos de presencia del GBIF (use rgbif para descargar la data). Explique el resultado y compare la diferencia entre la salida de los dos modelos. En qué regiones los modelos difieren más en la predicción?   
-```{r}
-library(rgbif)
-library(tidyverse)
+```{r eval=FALSE}
+# Cargar librerías
+library(rgbif)  # Para descargar datos del GBIF
+library(dismo)  # Para trabajar con modelos de distribución de especies
+library(randomForest)  # Para el modelo de bosques aleatorios
 
+especie <- "Puma concolor"
 
+# Obtener datos de presencia desde el GBIF para Ecuador
+datos_presencia <- occ_search(scientificName = especie,
+                              country = "EC",
+                              hasCoordinate = TRUE)
 
-occ = occ_data(scientificName = 'Ceroxylon quindiuense', 
-                limit = 200000, 
-                hasCoordinate = TRUE, 
-                hasGeospatialIssue = FALSE)
+# Extraer las coordenadas de latitud y longitud
+ latitud <- datos_presencia$data$latitude
+  longitud <- datos_presencia$data$longitude
 
-Datos_oso_anteojos= filter(occ$data, country == 'Ecuador')
+# Crear un data frame con las coordenadas
+datos_df <- data.frame(latitude = latitud, longitude = longitud)
 
+# Modelos de distribución de especies
 
-shp = raster::getData('GADM', country = 'ECU', level = 1)
+# Modelo glm
+library(gbm)
+modelo_glm <- gbm(presence ~ longitude + latitude, data = datos_df,
+                  distribution = "bernoulli",
+                  n.trees = 500,
+                  interaction.depth = 5,
+                  bag.fraction = 0.5)
 
- ggplot() +
-  geom_point(data = Datos_oso_anteojos, aes(x = decimalLongitude, y = decimalLatitude), color = 'black') +
-  geom_polygon(data = shp, aes(x = long, y = lat, group = group), color = 'grey', fill = NA) +
-  coord_fixed(ylim = c(-5, 2.5), xlim = c(-92.5, -30))+  xlab('Longitud') +
- ylab('Latitud')
+# Modelo de bosques aleatorios (rf)
+datos_rf <- randomForest::randomForest(species ~ longitude + latitude,
+                                       data = datos_df,
+                                       ntree = 500)
+
+# Predecir la distribución de la especie en todo Ecuador continental
+extent_ecuador <- extent(-92.0, -75.2, -5.0, 1.4)  # Extensión de Ecuador continental
+raster_pred_glm <- predict(modelo_glm, extent_ecuador, n.trees = 500, type = "response")
+raster_pred_rf <- predict(datos_rf, extent_ecuador, type = "response")
+
+# Graficar las predicciones
+par(mfrow = c(1, 2))
+plot(raster_pred_glm, main = "Predicción - Modelo GLM")
+plot(raster_pred_rf, main = "Predicción - Modelo Random Forest")
 ```
 
