@@ -490,7 +490,7 @@ library(mgcv)
 library(leaflet)
 
 # Especificar la especie seleccionada
-especie <- "Puma concolo"  
+especie <- "Anona cherimola"  
 
 # Obtener los datos de presencia del GBIF para Ecuador continental
 datos_presencia <- occ_search(taxonKey = name_backbone(especie)$speciesKey, country = "EC", hasCoordinate = TRUE, limit = 10000)
