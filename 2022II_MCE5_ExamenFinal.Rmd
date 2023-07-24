@@ -442,6 +442,9 @@ library(randomForest)  # Para el modelo de bosques aleatorios
 especie <- "Puma concolor"
 
 # Obtener datos de presencia desde el GBIF para Ecuador
+# Cargar el paquete rgbif
+library(rgbif)
+
 datos_presencia <- occ_search(scientificName = especie,
                               country = "EC",
                               hasCoordinate = TRUE)
@@ -456,12 +459,12 @@ datos_df <- data.frame(latitude = latitud, longitude = longitud)
 # Modelos de distribución de especies
 
 # Modelo glm
-library(gbm)
-modelo_glm <- gbm(presence ~ longitude + latitude, data = datos_df,
-                  distribution = "bernoulli",
-                  n.trees = 500,
-                  interaction.depth = 5,
-                  bag.fraction = 0.5)
+library(randomForest)
+
+modelo_rf <- randomForest(presence ~ longitude + latitude, data = datos_df,
+                          ntree = 500,
+                          mtry = 2,
+                          nodesize = 1)
 
 # Modelo de bosques aleatorios (rf)
 datos_rf <- randomForest::randomForest(species ~ longitude + latitude,
@@ -477,5 +480,61 @@ raster_pred_rf <- predict(datos_rf, extent_ecuador, type = "response")
 par(mfrow = c(1, 2))
 plot(raster_pred_glm, main = "Predicción - Modelo GLM")
 plot(raster_pred_rf, main = "Predicción - Modelo Random Forest")
+```
+
+```{r}
+library(rgbif)
+library(sp)
+library(randomForest)
+library(mgcv)
+library(leaflet)
+
+# Especificar la especie seleccionada
+especie <- "Puma concolo"  
+
+# Obtener los datos de presencia del GBIF para Ecuador continental
+datos_presencia <- occ_search(taxonKey = name_backbone(especie)$speciesKey, country = "EC", hasCoordinate = TRUE, limit = 10000)
+
+# Filtrar y limpiar los datos
+datos_presencia <- datos_presencia$data
+datos_presencia <- na.omit(datos_presencia[, c("decimalLongitude", "decimalLatitude")])
+coordenadas <- data.frame(x = datos_presencia$decimalLongitude, y = datos_presencia$decimalLatitude)
+
+# Dividir los datos en conjuntos de entrenamiento y prueba
+set.seed(123)
+indices_entrenamiento <- sample(nrow(coordenadas), floor(0.7 * nrow(coordenadas)))
+datos_entrenamiento <- coordenadas[indices_entrenamiento, ]
+datos_prueba <- coordenadas[-indices_entrenamiento, ]
+
+# Modelado: Bosques Aleatorios (rf)
+modelo_rf <- randomForest(x ~ y, data = datos_entrenamiento, ntree = 100)
+
+# Modelado: Generalized Additive Model (gam)
+modelo_gam <- gam(y ~ s(x), data = datos_entrenamiento)
+
+# Evaluar el desempeño de los modelos
+prediccion_rf <- predict(modelo_rf, newdata = datos_prueba)
+oreprediccion_gam <- predict(modelo_gam, newdata = datos_prueba)
+
+# Comparar las predicciones de los modelos
+diferencias <- abs(prediccion_rf - oreprediccion_gam)
+
+# Agregar las coordenadas predichas al conjunto de datos de prueba
+datos_prueba$pred_rf <- prediccion_rf
+datos_prueba$pred_gam <- oreprediccion_gam
+
+# Crear mapa con los puntos de presencia y diferencias de predicción
+mapa_presencia <- leaflet(data = datos_prueba) %>%
+  addTiles() %>%
+  addMarkers(lng = ~x, lat = ~y, 
+             popup = ~paste("Especie:", especie, "<br>",
+                            "Predicción Bosques Aleatorios (rf):", round(pred_rf, 2), "<br>",
+                            "Predicción Generalized Additive Model (gam):", round(pred_gam, 2), "<br>",
+                            "Diferencia de predicción:", round(diferencias, 2)),
+             label = ~especie)
+
+# Visualizar el mapa
+mapa_presencia
+
 ```
 
